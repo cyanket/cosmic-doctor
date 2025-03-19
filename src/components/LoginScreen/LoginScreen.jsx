@@ -1,4 +1,3 @@
-// LoginScreen.jsx
 import React, { useState } from 'react';
 import './LoginScreen.css';
 import Dashboard from '../Dashboard/Dashboard';
@@ -14,7 +13,7 @@ const LoginScreen = () => {
   const [error, setError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const handleSignIn = (e) => {
+  const handleSignIn = async (e) => {
     e.preventDefault();
     setError('');
     
@@ -25,15 +24,33 @@ const LoginScreen = () => {
     
     setIsLoading(true);
     
-    // Simulate API call for authentication
-    setTimeout(() => {
+    try {
+      const response = await fetch('http://13.60.251.253:3000/api/admins/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed. Please try again.');
+      }
+
+      setShowMFA(true);
+    } catch (err) {
+      setError(err.message || 'An error occurred. Please try again.');
+    } finally {
       setIsLoading(false);
-      // setShowMFA(true);
-      setIsAuthenticated(true);
-    }, 1500);
+    }
   };
 
-  const handleMFASubmit = (e) => {
+  const handleMFASubmit = async (e) => {
     e.preventDefault();
     setError('');
     
@@ -44,11 +61,34 @@ const LoginScreen = () => {
     
     setIsLoading(true);
     
-    // Simulate API call for MFA verification
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const response = await fetch('http://13.60.251.253:3000/api/admins/verify-login-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          otp: verificationCode
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'OTP verification failed. Please try again.');
+      }
+
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+      }
+      
       setIsAuthenticated(true);
-    }, 1500);
+    } catch (err) {
+      setError(err.message || 'An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const resetForm = () => {
