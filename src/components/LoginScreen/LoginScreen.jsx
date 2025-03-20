@@ -25,7 +25,7 @@ const LoginScreen = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch('http://13.60.251.253:3000/api/admins/login', {
+      const response = await fetch('https://d353zt45o0thvt.cloudfront.net/api/admins/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ const LoginScreen = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch('http://13.60.251.253:3000/api/admins/verify-login-otp', {
+      const response = await fetch('https://d353zt45o0thvt.cloudfront.net/api/admins/verify-login-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
